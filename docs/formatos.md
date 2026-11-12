@@ -34,3 +34,10 @@ Fontes: [Documentação técnica de 2022](https://www.tse.jus.br/eleicoes/eleico
 - Pacote de urna RR, 2º turno de 2026. Foram lidos 1.519 BU, 1.519 RDV e 1.519 VSC. Em 1.519 pares positivos, a soma dos quantitativos presidenciais do BU coincidiu com a contagem de registros presidenciais do RDV.
 - Pacote de urna do exterior, 1º turno de 2022. Foram lidos 915 BU, 960 RDV e 915 VSCMR. Em 861 pares positivos com BU e RDV, as contagens coincidiram. Os demais arquivos ficam fora dessa comparação de pares positivos.
 - Testes locais sintéticos cobrem CSV particionado byte a byte, acentuação, aspas, quebra de linha, filtro presidencial, logs de urna e GEDAI, EA20 e rejeição de BER truncado.
+
+
+Para reproduzir a comparação de contagem de votos em um pacote coletado, passe a pasta que contém o `manifest.json` e os shards. O comando informa os pares positivos, divergências e chaves presentes em apenas uma das fontes:
+
+```powershell
+node node_modules/tsx/dist/cli.mjs src/verify-pairs.ts CAMINHO_DA_CAPTURA
+```
