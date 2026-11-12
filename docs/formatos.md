@@ -31,7 +31,7 @@ Fontes: [Documentação técnica de 2022](https://www.tse.jus.br/eleicoes/eleico
 ## Conferências locais
 
 - CSV de BU de RR no 1º turno. Os arquivos oficiais de 2018, 2022 e 2026 produziram respectivamente 12.635, 8.807 e 10.588 registros presidenciais.
-- Pacote de urna RR, 2º turno de 2026. Foram lidos 1.519 BU, 1.519 RDV e 1.519 VSC. Em 1.519 pares positivos, a soma dos quantitativos presidenciais do BU coincidiu com a contagem de registros presidenciais do RDV.
+- Pacote de urna RR, 2º turno de 2026. A coleta ponta a ponta registrou 9.133 entradas e 12.643.332 registros, incluindo 12.324.846 linhas de log. Foram lidos 1.519 BU, 1.519 RDV e 1.519 VSC. Em 1.519 pares positivos, a soma dos quantitativos presidenciais do BU coincidiu com a contagem de registros presidenciais do RDV.
 - Pacote de urna do exterior, 1º turno de 2022. Foram lidos 915 BU, 960 RDV e 915 VSCMR. Em 861 pares positivos com BU e RDV, as contagens coincidiram. Os demais arquivos ficam fora dessa comparação de pares positivos.
 - Testes locais sintéticos cobrem CSV particionado byte a byte, acentuação, aspas, quebra de linha, filtro presidencial, logs de urna e GEDAI, EA20 e rejeição de BER truncado.
 

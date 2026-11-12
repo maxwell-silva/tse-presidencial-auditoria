@@ -17,7 +17,7 @@ export const safeJson = (value: unknown) => JSON.stringify(value, (_key, item) =
   item?.type === 'Buffer' && Array.isArray(item.data) ? { base64: Buffer.from(item.data).toString('base64') } : item);
 
 export class NdjsonWriter {
-  private current?: { stream: ReturnType<typeof createGzip>; complete: Promise<void>; path: string; name: string; rows: number; bytes: number };
+  private current?: { stream: ReturnType<typeof createGzip>; complete: Promise<void>; path: string; name: string; rows: number; bytes: number; pending: string[]; pendingBytes: number };
   count = 0;
   readonly shards: Shard[] = [];
 
@@ -34,18 +34,29 @@ export class NdjsonWriter {
       const stream = createGzip({ level: 3 });
       const complete = pipeline(stream, createWriteStream(path, { flags: 'wx' }));
       void complete.catch(() => {});
-      this.current = { stream, complete, path, name, rows: 0, bytes: 0 };
+      this.current = { stream, complete, path, name, rows: 0, bytes: 0, pending: [], pendingBytes: 0 };
     }
     const current = this.current;
-    if (!current.stream.write(row)) await once(current.stream, 'drain');
+    current.pending.push(row);
+    current.pendingBytes += bytes;
     current.rows++;
     current.bytes += bytes;
     this.count++;
+    if (current.pendingBytes >= 256 * 1024) await this.flush(current);
+  }
+
+  private async flush(current: NonNullable<NdjsonWriter['current']>) {
+    if (!current.pending.length) return;
+    const chunk = current.pending.join('');
+    current.pending = [];
+    current.pendingBytes = 0;
+    if (!current.stream.write(chunk)) await once(current.stream, 'drain');
   }
 
   async close() {
     const current = this.current;
     if (!current) return;
+    await this.flush(current);
     current.stream.end();
     await current.complete;
     this.shards.push({ name: current.name, rows: current.rows, ...await hashFile(current.path) });
