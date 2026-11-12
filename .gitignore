@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.*
+credentials*.json
+application_default_credentials.json
+*service-account*.json
+*.key
+*.pem
+*.ndjson
+*.zip
+*.part
+work/
+data/
+__pycache__/

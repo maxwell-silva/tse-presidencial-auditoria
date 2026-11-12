@@ -1,0 +1,13 @@
+{
+  "name": "tse-presidencial-auditoria",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=22.12"},
+  "scripts": {
+    "pipeline": "tsx src/cli.ts",
+    "check": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {"google-auth-library": "^10.0.0", "yauzl": "3.4.0"},
+  "devDependencies": {"@types/node": "^22.0.0", "@types/yauzl": "^2.10.0", "tsx": "4.23.15", "typescript": "6.0.3"}
+}
