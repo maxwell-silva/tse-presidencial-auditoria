@@ -55,3 +55,11 @@ test('BER rejeita entrada de BU truncada', async () => {
     bytes: Buffer.from([0x30, 0x04, 0x02, 0x01, 0x01]),
   })), /ASN.1: conteúdo truncado/);
 });
+
+test('BU de 2018 conserva aspas internas sem escape e o alinhamento das colunas', async () => {
+  const bytes = Buffer.from('"CD_CARGO";"NOME";"VOTOS"\r\n"1";"NOME "APELIDO"";"7"');
+  const input = { name: 'bu.csv', category: 'boletim-urna', bytes };
+  const rows = await collect(decode({ ...input, year: 2018 }));
+  assert.deepEqual(rows[0].payload, { CD_CARGO: '1', NOME: 'NOME "APELIDO"', VOTOS: '7' });
+  await assert.rejects(collect(decode({ ...input, year: 2026 })), /fechamento de aspas/);
+});

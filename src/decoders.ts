@@ -14,6 +14,7 @@ async function* csvRecords(input: CsvInput): AsyncGenerator<string[]> {
   let state: 'start' | 'plain' | 'quoted' | 'afterQuote' = 'start';
   let row: string[] = [];
   let field = '';
+  let unescapedQuote = false;
   let recordLength = 0;
   let skipLf = false;
   let decoder: TextDecoder | undefined;
@@ -31,6 +32,7 @@ async function* csvRecords(input: CsvInput): AsyncGenerator<string[]> {
     if (row.length === MAX_CSV_COLUMNS) throw new Error('Registro CSV acima do limite de colunas');
     row.push(field);
     field = '';
+    unescapedQuote = false;
     state = 'start';
   }
 
@@ -47,7 +49,7 @@ async function* csvRecords(input: CsvInput): AsyncGenerator<string[]> {
       }
       if (state === 'afterQuote' && char === '"') {
         append(char);
-        state = 'quoted';
+        if (!unescapedQuote) state = 'quoted';
         continue;
       }
       if (char === ';' || char === '\r' || char === '\n') {
@@ -60,7 +62,14 @@ async function* csvRecords(input: CsvInput): AsyncGenerator<string[]> {
         }
         continue;
       }
-      if (state === 'afterQuote') throw new Error('Caractere após o fechamento de aspas em CSV');
+      if (state === 'afterQuote') {
+        // Alguns nomes publicados em 2018 contêm aspas internas sem escape.
+        if (input.year !== 2018) throw new Error('Caractere após o fechamento de aspas em CSV');
+        append('"' + char);
+        unescapedQuote = true;
+        state = 'quoted';
+        continue;
+      }
       if (char === '"') {
         if (state !== 'start') throw new Error('Aspas em campo CSV não delimitado');
         state = 'quoted';
